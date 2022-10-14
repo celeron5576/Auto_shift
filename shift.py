@@ -43,6 +43,10 @@ for i in range(10):
             print(start_working[a-1][n])
     a += 1
 
+
+####################################################################################
+#もし出勤可能日が営業日÷7より小さければマークをつける
+####################################################################################
 b = 0
 print(col)
 for counter in count:
@@ -53,3 +57,22 @@ for counter in count:
 print(count)
 print(less_people)
 print(start_working)
+
+
+array1 = [1,2,3,4,5,6,7,8,9,0]
+array2 = []
+for i in array1:
+    if i != 0:
+        array2.append(i)
+        print(array2)
+
+arr1 = [1, 2, 3]
+arr2 = [4, 5, 6]
+arr3 = []
+#arr1はa以上出勤可能日があるかのやつ
+for e in arr1:
+    for f in int((col-4)/7):
+        if e == 1:
+            val = random.choice(array2)
+            arr3.append(val)
+            arr2.remove(val)
