@@ -1,32 +1,35 @@
-import numpy as np
-arr = np.zeros((20,15))
+######################################################
+# 20×10　の二次元配列 a b を用意し、0で初期化
+# testという配列を用意し、for文でtest配列を回す。
+#test配列のn番目の要素が1の時、二次元配列のaの1個めのn要素を1に書き換える
+#
+#するとなぜかa配列aの1番目以外の要素も書き換えられてしまう。
+#そのほかにもb配列の要素も書き換えられる。
+######################################################
+a = []
+b = []
+c = []
 
-print(arr)
+for d in range(20):
+    c.append(0)
+for e in range(10):
+    a.append(c)
+    b.append(c)
 
+print("書き換える前")
+print("a:" + str(a))
+print("b:" + str(b))
+print("")
+print("")
 
-col = 20
-
-
-start_working = []
-end_working = []
-temp_working = []
-
-for d in range(col-4):
-    temp_working.append(d)
-for c in range(10):
-    start_working.append(temp_working)
-    end_working.append(temp_working)
-
-
-test = [0,0,1,1,1,0,0,0]
+test = [0,0,1,1,1,0,0,1,1,0,1,1,1,0,0,1]
 
 n = 0
 for test_temp in test:
     if test_temp == 1:
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(test_temp)
-        print(arr[0][n])
-        arr[0][n] = 1
+        a[0][n] = 1
     n += 1
 
-print(arr)
+print("書き換え後")
+print("a:" + str(a))
+print("b:" + str(b))
