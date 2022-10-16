@@ -133,12 +133,14 @@ def main():
 
 def shift_count(shift):
     print(shift)
+    print(col)
     a = 1
     count = [0,0,0,0,0,0,0,0,0,0]
     for i in range(10):
-        for n in range(col - 4):
+        for n in range(col - 5):
             #print(df.iat[a-1,n+3])
             #print(df.iat[a-1,n+3])
+            print(shift[i][n])
             if not (pd.isnull(shift[i][n])):
                 #print(df.iloc[a-1,n+3])
                 count[i] += 1
