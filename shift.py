@@ -20,20 +20,11 @@ shift_end = []
 
 #出勤可能日の開始時間と終了時間を配列で表す。配列はすべて0で埋めて初期化
 #横の列が日ごとの出勤開始時間(終了時間)、縦の列が人(Aさん、Bさん、Cさん、Dさん、、、)
-for d in range(10):
-    for c in range(20):
-        temp_working.append(0)
-    start_working.append(temp_working)
-    end_working.append(temp_working)
-    shift_start.append(temp_working)
-    shift_end.append(temp_working)
-    temp_working = []
+start_working = [[0 for i in range(20)] for j in range(10)]
+end_working = [[0 for i in range(20)] for j in range(10)]
+shift_start = [[0 for i in range(20)] for j in range(10)]
+shift_end = [[0 for i in range(20)] for j in range(10)]
 
-start_working = shift_start
-
-print(start_working)
-print(end_working)
-print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 #shift_start = shift_end = end_working = start_working
 
@@ -84,23 +75,18 @@ def main():
                 #print(df.iloc[a-1,n+3])
                 count[i] += 1
                 start_working[i][n] = df.iloc[a-1,n+3]
-                print(start_working)
                 end_working[i][n] = df.iloc[a,n+3]
         a += 2
-    
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print(start_working)
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print(end_working)
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-"""
+
     ####################################################################################
     #もし出勤可能日が営業日÷7より小さければマークをつける
     #出勤可能日が営業日より少ないかどうかの配列(less_people)を用意し、0で初期化（例:[0,0,0,0,0,0,0,0,0,0,0,0]
     #countには従業員ごとの出勤可能日数が入っている
     ####################################################################################
     less_people,temp_less = less_people_bool(count)
+    print(less_people)
+    print(temp_less)
 
     ####################################################################################
     #出勤可能日が一定値以下の人を取り出すプログラム
@@ -108,9 +94,8 @@ def main():
     while(1 in less_people):
         for g in range(len(temp_less)):
             temp_number = random.choice(temp_less)
-            print(temp_number)
             temp_less.remove(temp_number)
-        count = shift_count(shift_start)
+        count = shift_count(start_working)
         less_people,temp_less = less_people_bool(count)
     print(count)
     print(less_people)
@@ -147,13 +132,17 @@ def main():
 
 
 def shift_count(shift):
-    print(shift[0])
+    print(shift)
+    a = 1
     count = [0,0,0,0,0,0,0,0,0,0]
-    for h in shift:
-        for j in range(col - 4):
-            if shift[h][j] != 0:
-                count[h] += 1
-    return count
+    for i in range(10):
+        for n in range(col - 4):
+            #print(df.iat[a-1,n+3])
+            #print(df.iat[a-1,n+3])
+            if not (pd.isnull(shift[i][n])):
+                #print(df.iloc[a-1,n+3])
+                count[i] += 1
+        a += 2
 
 def less_people_bool(less):
     less_people = [0,0,0,0,0,0,0,0,0,0]
@@ -165,7 +154,7 @@ def less_people_bool(less):
             temp_less.append(b)
         b += 1
     return less_people,temp_less
-"""
+
 
 if __name__ == "__main__":
     main()
