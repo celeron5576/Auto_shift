@@ -1,5 +1,8 @@
 import pandas as pd
 import sys
+import random
+import numpy as np
+
 
 #print(pd.__version__)
 
@@ -16,11 +19,28 @@ start_working = []
 end_working = []
 temp_working = []
 
+for d in range(10):
+    for c in range(20):
+        temp_working.append(0)
+    start_working.append(temp_working)
+    end_working.append(temp_working)
+    temp_working = []
+    
+"""
+start_working = []
+end_working = []
+temp_working = []
+
 for d in range(col-4):
-    temp_working.append(0)
+    temp_working.append(d)
 for c in range(10):
     start_working.append(temp_working)
     end_working.append(temp_working)
+print(start_working)
+"""
+
+#start_working = np.zeros((10 ,col-4))
+#end_working = np.zeros((10 ,col-4))
 
 ####################################################################################
 #何日シフトに入れるかを取得するプログラム
@@ -29,7 +49,7 @@ for c in range(10):
 #もしレベルを入力していなかったらエラーを出すようにした
 ####################################################################################
 for i in range(10):
-    print(df.loc[a])
+    #print(df.loc[a][4])
     #print(df.at[a,"レベル(1~4)"])
     if df.at[a,"レベル(1~4)"] == "nan":
         print("レベルを入力してください！")
@@ -37,10 +57,11 @@ for i in range(10):
     #シフトが入力された部分のみを繰り返す。欠損値じゃなければ出勤可能日カウントを1増やす
     for n in range(col - 4):
         #print(df.iat[a-1,n+3])
+        print(df.iat[a-1,n+3])
         if not (pd.isnull(df.iat[a-1,n+3])):
             count[a-1] += 1
-            start_working[a-1][n] = df.iat[a-1,n+3]
-            print(start_working[a-1][n])
+            start_working[i][n] = df.iloc[a-1,n+3]
+            end_working[i][n] = df.iloc[i+1,n+3]
     a += 1
 
 
@@ -56,7 +77,8 @@ for counter in count:
 
 print(count)
 print(less_people)
-print(start_working)
+#print(start_working)
+#print(end_working)
 
 
 array1 = [1,2,3,4,5,6,7,8,9,0]
@@ -69,10 +91,18 @@ for i in array1:
 arr1 = [1, 2, 3]
 arr2 = [4, 5, 6]
 arr3 = []
+
+flag_temp = []
+for less_temp in less_people:
+    if less_temp == 1:
+        flag_temp.append[0]
+
 #arr1はa以上出勤可能日があるかのやつ
-for e in arr1:
-    for f in int((col-4)/7):
-        if e == 1:
-            val = random.choice(array2)
-            arr3.append(val)
-            arr2.remove(val)
+while(0 in flag_temp):
+    for e in arr1:
+        for f in int((col-4)/7):
+            if e == 1:
+                val = random.choice(array2)
+                arr3.append(val)
+                arr2.remove(val)
+                flag_temp[f] = 1
