@@ -44,6 +44,10 @@ for i in range(10):
 countt = count
 
 
+level = [0,0,0,0,0,0,0,0,0,0]
+for m in range(10):
+    level[m] = df.iloc[(m * 2)][1]
+
 for aa in range(10):
     for aaa in range(col - 3):
         if start_working[aa][aaa] != 0:
