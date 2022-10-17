@@ -8,7 +8,6 @@ import random
 #excelの読み込み
 df = pd.read_excel('test_shift.xlsx' ,sheet_name=0 ,index_col=0)
 col = len(df.columns)
-print(col)
 start_working = []
 temp_working = []
 end_working = []
@@ -26,9 +25,9 @@ a = 1
 count = [0,0,0,0,0,0,0,0,0,0]
 
 
-shift_start = [[0 for i in range(col - 3)] for j in range(2)]
-shift_end = [[0 for i in range(col - 3)] for j in range(2)]
-shift_people = [[0 for i in range(col - 3)] for j in range(2)]
+shift_start = [[0 for i in range(col - 3)] for j in range(3)]
+shift_end = [[0 for i in range(col - 3)] for j in range(3)]
+shift_people = [[0 for i in range(col - 3)] for j in range(3)]
 
 
 a = 1
@@ -56,8 +55,6 @@ for aa in range(10):
 
 
 def main():
-    print(countt)
-
     ####################################################################################
     #もし出勤可能日が営業日÷7より小さければマークをつける
     #出勤可能日が営業日より少ないかどうかの配列(less_people)を用意し、0で初期化（例:[0,0,0,0,0,0,0,0,0,0,0,0]
@@ -78,14 +75,13 @@ def main():
             temp_number = random.choice(temp_less)
             temp_less.remove(temp_number)
             shift_in(temp_number)
-            print("!")
         count = shift_count(start_working)
         less_people,temp_less = less_people_bool(count)
-    print(count)
-    print(less_people)
-    print(temp_less)
-    print(shift_start)
-    print(shift_people)
+    #print(count)
+    #print(less_people)
+    #print(temp_less)
+    #print(shift_start)
+    #print(shift_people)
     #print(start_working)
     #print(end_working)
 
@@ -107,19 +103,18 @@ def main():
 
     more_people,temp_more = more_people_bool(count)
 
-    print(more_people)
-    print(temp_more)
-    print(count)
+    #print(more_people)
+    #print(temp_more)
+    #print(count)
 
 
     while(1 in more_people):
         for g in range(len(temp_more)):
             temp_number = random.choice(temp_more)
             temp_more.remove(temp_number)
+            #print(temp_number)
             shift_in(temp_number)
-            print("#")
         count = shift_count(start_working)
-        print("#")
         #print("#############################")
         #print(less_people)
         #print(temp_less)
@@ -181,6 +176,8 @@ def less_people_bool(less):
 def shift_in(people):
     boo = 0
     while(boo == 0):
+        print(people)
+        print(syukkinn_kanoubi)
         temp = random.choice(syukkinn_kanoubi[people])
         if shift_start[0][temp] == 0:
             shift_start[0][temp] = start_working[people][temp]
@@ -188,6 +185,7 @@ def shift_in(people):
             shift_people[0][temp] = people + 1
             boo = 1
         elif shift_start[1][temp] == 0:
+            people = level_bool(level[people] ,people ,temp)
             shift_start[1][temp] = start_working[people][temp]
             shift_end[1][temp] = end_working[people][temp]
             shift_people[1][temp] = people + 1
@@ -206,7 +204,7 @@ def more_people_bool(more):
     temp_more = []
     b = 0
     for cou in more:
-        if (cou >= int((col-3)/7)):
+        if (cou >= 1):
             more_people[b] = 1
             temp_more.append(b)
         if cou == 0:
@@ -214,7 +212,24 @@ def more_people_bool(more):
         b += 1
     return more_people,temp_more
 
-
+def level_bool(level1 ,o ,temp):
+    if (level1 + level[o]) >= 5:
+        return o
+    else:
+        for n in range(len(start_working)):
+            if start_working[n][temp] != 0:
+                if (level1 + level[n]) >= 5:
+                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    o = n
+                    return o
+        for n in range(len(start_working)):
+            if start_working[n][temp] != 0:
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                shift_start[2][temp] = start_working[n][temp]
+                shift_end[2][temp] = end_working[n][temp]
+                shift_people[2][temp] = n + 1
+                return o
+        return o
 
 
 
