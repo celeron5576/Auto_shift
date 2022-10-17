@@ -1,7 +1,8 @@
 import pandas as pd
 import sys
 import random
-
+import datetime
+import copy
 
 #print(pd.__version__)
 
@@ -42,6 +43,8 @@ for i in range(10):
 
 countt = count
 
+start_working_temp = copy.deepcopy(start_working)
+end_working_temp = copy.deepcopy(end_working)
 
 level = [0,0,0,0,0,0,0,0,0,0]
 for m in range(10):
@@ -196,7 +199,7 @@ def shift_in(people):
         syukkinn_kanoubi[people].remove(temp)
         if not (1 in syukkinn_kanou):
             boo = 1
-    
+
 
 
 def more_people_bool(more):
@@ -246,7 +249,23 @@ def time_bool():
                 shift_end_temp = shift_end[1][p]
             else:
                 shift_end_temp = shift_end[0][p]
-
+        #はじめも終わりも欠損あり
+        if (shift_start_temp > datetime.time(9,0)) & (shift_end_temp < datetime.time(15,30)):
+            for t in end_working_temp:
+                if t[p] != 0:
+                    if (t[p] <= datetime.time(9,0)) & (t[p] >= datetime.time(15,30)):
+        #初めのほうのみ欠損あり
+        if (shift_start_temp > datetime.time(9,0)) & (shift_end_temp >= datetime.time(15,30)):
+            for r in start_working_temp:
+                if r[p] != 0:
+                    if r[p] <= datetime.time(9,0):
+                        #シフトを入れる
+        #終わりのほうのみ欠損あり
+        if  (shift_start_temp <= datetime.time(9,0)) & (shift_end_temp < datetime.time(15,30)):
+            for s in end_working_temp:
+                if s[p] != 0:
+                    if s[p] >= datetime.time(15,30):
+                        #シフトを入れる
 
 
 if __name__ == "__main__":
