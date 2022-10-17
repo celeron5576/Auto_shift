@@ -33,17 +33,9 @@ shift_people = [[0 for i in range(col - 3)] for j in range(2)]
 
 a = 1
 for i in range(10):
-    #print(df.loc[a][4])
-    #print(df.at[a,"レベル(1~4)"])
-    #if df.at[a,"レベル(1~4)"] == "nan":
-    #    print("レベルを入力してください！")
-    #    sys.exit()
     #シフトが入力された部分のみを繰り返す。欠損値じゃなければ出勤可能日カウントを1増やす
     for n in range(col - 3):
-        #print(df.iat[a-1,n+3])
-        #print(df.iat[a-1,n+3])
         if not (pd.isnull(df.iat[a-1,n+3])):
-            #print(df.iloc[a-1,n+3])
             count[i] += 1
             start_working[i][n] = df.iloc[a-1,n+3]
             end_working[i][n] = df.iloc[a,n+3]
@@ -58,60 +50,9 @@ for aa in range(10):
             syukkinn_kanou[aa][aaa] = 1
             syukkinn_kanoubi[aa].append(aaa)
 
-#shift_start = shift_end = end_working = start_working
 
 def main():
     print(countt)
-    """
-    #宣言&初期化
-    a = 1
-    count = [0,0,0,0,0,0,0,0,0,0]
-
-
-    
-    start_working = []
-    end_working = []
-    temp_working = []
-
-    for d in range(col-4):
-        temp_working.append(d)
-    for c in range(10):
-        start_working.append(temp_working)
-        end_working.append(temp_working)
-    print(start_working)
-    
-
-    #start_working = np.zeros((10 ,col-4))
-    #end_working = np.zeros((10 ,col-4))
-
-    ####################################################################################
-    #何日シフトに入れるかを取得するプログラム
-    #start_working end_workingに出勤可能日の開始時間、終了時間を入れるプログラム
-
-    #変数aはa人目のこと
-    #最大10人しか考えられてない(簡単に再利用できるように改善予定)
-    #もしレベルを入力していなかったらエラーを出すようにした
-    ####################################################################################
-    #print(df.iloc[0][3])
-    #print(df.iloc[1][3])
-    a = 1
-    for i in range(10):
-        #print(df.loc[a][4])
-        #print(df.at[a,"レベル(1~4)"])
-        #if df.at[a,"レベル(1~4)"] == "nan":
-        #    print("レベルを入力してください！")
-        #    sys.exit()
-        #シフトが入力された部分のみを繰り返す。欠損値じゃなければ出勤可能日カウントを1増やす
-        for n in range(col - 4):
-            #print(df.iat[a-1,n+3])
-            #print(df.iat[a-1,n+3])
-            if not (pd.isnull(df.iat[a-1,n+3])):
-                #print(df.iloc[a-1,n+3])
-                count[i] += 1
-                start_working[i][n] = df.iloc[a-1,n+3]
-                end_working[i][n] = df.iloc[a,n+3]
-        a += 2
-"""
 
     ####################################################################################
     #もし出勤可能日が営業日÷7より小さければマークをつける
@@ -119,10 +60,6 @@ def main():
     #countには従業員ごとの出勤可能日数が入っている
     ####################################################################################
     less_people,temp_less = less_people_bool(countt)
-    print("#################################################")
-    print(less_people)
-    print(temp_less)
-    print("#################################################")
 
     ####################################################################################
     #出勤可能日が一定値以下の人を取り出してシフトに入れるプログラム
@@ -139,10 +76,6 @@ def main():
             shift_in(temp_number)
             print("!")
         count = shift_count(start_working)
-        #print("#############################")
-        #print(less_people)
-        #print(temp_less)
-        #print("#############################")
         less_people,temp_less = less_people_bool(count)
     print(count)
     print(less_people)
@@ -193,54 +126,16 @@ def main():
     print(temp_more)
     print(shift_start)
     print(shift_people)
-"""
-    array1 = [1,2,3,4,5,6,7,8,9,0]
-    array2 = []
-    for i in array1:
-        if i != 0:
-            array2.append(i)
-            print(array2)
-
-    arr1 = [1, 2, 3]
-    arr2 = [4, 5, 6]
-    arr3 = []
-
-    flag_temp = []
-    for less_temp in less_people:
-        if less_temp == 1:
-            flag_temp.append[0]
-
-    #arr1はa以上出勤可能日があるかのやつ
-    while(0 in flag_temp):
-        for e in arr1:
-            for f in int((col-4)/7):
-                if e == 1:
-                    val = random.choice(array2)
-                    arr3.append(val)
-                    arr2.remove(val)
-                    flag_temp[f] = 1
-"""
 
 ####################################################################################
 #出勤可能日をカウントする関数
 ####################################################################################
 def shift_count(shift):
-    #print(shift)
-    #print(col)
-    #a = 1
-    print("0")
     count = [0,0,0,0,0,0,0,0,0,0]
     for i in range(10):
-        print("1")
-        for n in range(col - 5):
-            print("2")
-            #print(df.iat[a-1,n+3])
-            #print(df.iat[a-1,n+3])
-            #print(shift[i][n])
+        for n in range(col - 3):
             if shift[i][n] != 0:
-                #print(df.iloc[a-1,n+3])
                 count[i] += 1
-        #a += 2
     return count
 
 def counttt():
@@ -262,7 +157,7 @@ def less_people_bool(less):
     temp_less = []
     b = 0
     for cou in less:
-        if (cou <= int((col-4)/7)) & (cou != 0):
+        if (cou <= int((col-3)/7)) & (cou != 0):
             less_people[b] = 1
             temp_less.append(b)
         if cou == 0:
@@ -281,14 +176,8 @@ def less_people_bool(less):
 ####################################################################################
 def shift_in(people):
     boo = 0
-    #print("!!!!!!!!!!!!!!!!!!!!!!!!")
-    #print(syukkinn_kanoubi)
-    #print(people)
     while(boo == 0):
         temp = random.choice(syukkinn_kanoubi[people])
-        #print(temp)
-        #print(start_working)
-        #print(start_working[people][temp])
         if shift_start[0][temp] == 0:
             shift_start[0][temp] = start_working[people][temp]
             shift_end[0][temp] = end_working[people][temp]
@@ -300,7 +189,6 @@ def shift_in(people):
             shift_people[1][temp] = people + 1
             boo = 1
         syukkinn_kanou[people][temp] = 0
-        #print(start_working)
         start_working[people][temp] = 0
         end_working[people][temp] = 0
         syukkinn_kanoubi[people].remove(temp)
@@ -310,18 +198,16 @@ def shift_in(people):
 
 
 def more_people_bool(more):
-    #print(less)
     more_people = [0,0,0,0,0,0,0,0,0,0]
     temp_more = []
     b = 0
     for cou in more:
-        if (cou >= int((col-4)/7)):
+        if (cou >= int((col-3)/7)):
             more_people[b] = 1
             temp_more.append(b)
         if cou == 0:
             more_people[b] = 0
         b += 1
-    #print(less_people)
     return more_people,temp_more
 
 
