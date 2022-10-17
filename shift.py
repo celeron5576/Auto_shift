@@ -232,6 +232,22 @@ def level_bool(level1 ,o ,temp):
         return o
 
 
+####################################################################################
+#
+####################################################################################
+def time_bool():
+    for p in range(col - 3):
+        if (shift_start[0][p] != 0) & (shift_start[1][p] != 0):
+            if shift_start[0][p] >= shift_start[1][p]:
+                shift_start_temp = shift_start[1][p]
+            else:
+                shift_start_temp = shift_start[0][p]
+            if shift_end[0][p] >= shift_end[1][p]:
+                shift_end_temp = shift_end[1][p]
+            else:
+                shift_end_temp = shift_end[0][p]
+
+
 
 if __name__ == "__main__":
     main()
