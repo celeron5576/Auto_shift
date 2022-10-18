@@ -127,6 +127,7 @@ def main():
     print(more_people)
     print(temp_more)
     print(shift_start)
+    print(shift_end)
     print(shift_people)
 
 ####################################################################################
@@ -200,7 +201,16 @@ def shift_in(people):
         if not (1 in syukkinn_kanou):
             boo = 1
 
-
+def shift_in_adjust(people,temp):
+    if shift_start[0][temp] == 0:
+        shift_start[0][temp] = start_working[people][temp]
+        shift_end[0][temp] = end_working[people][temp]
+        shift_people[0][temp] = people + 1
+    elif shift_start[1][temp] == 0:
+        people = level_bool(level[people] ,people ,temp)
+        shift_start[1][temp] = start_working[people][temp]
+        shift_end[1][temp] = end_working[people][temp]
+        shift_people[1][temp] = people + 1
 
 def more_people_bool(more):
     more_people = [0,0,0,0,0,0,0,0,0,0]
@@ -254,18 +264,23 @@ def time_bool():
             for t in end_working_temp:
                 if t[p] != 0:
                     if (t[p] <= datetime.time(9,0)) & (t[p] >= datetime.time(15,30)):
+                        shift_start[0][p] = start_working[t][p]
+                        shift_end[0][p] = end_working[t][p]
         #初めのほうのみ欠損あり
         if (shift_start_temp > datetime.time(9,0)) & (shift_end_temp >= datetime.time(15,30)):
             for r in start_working_temp:
                 if r[p] != 0:
                     if r[p] <= datetime.time(9,0):
-                        #シフトを入れる
+                        shift_start[0][p] = start_working[t][p]
+                        shift_end[0][p] = end_working[t][p]
         #終わりのほうのみ欠損あり
         if  (shift_start_temp <= datetime.time(9,0)) & (shift_end_temp < datetime.time(15,30)):
             for s in end_working_temp:
                 if s[p] != 0:
                     if s[p] >= datetime.time(15,30):
-                        #シフトを入れる
+                        shift_start[0][p] = start_working[t][p]
+                        shift_end[0][p] = end_working[t][p]
+
 
 
 if __name__ == "__main__":
