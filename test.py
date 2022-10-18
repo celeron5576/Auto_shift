@@ -16,4 +16,4 @@ print("Empty Dataframe ", shift, sep='\n')
 for n in range(len(shift_start)):
     for m in range(3):
         if shift_start[m][n] != 0:
-            shift.iloc[n ,people] = (shift_start[m][n].strftime("%H:%M") + "~" + shift_end[m][n].strftime("%H:%M"))
+            shift.iloc[n ,people[m][n]] = (shift_start[m][n].strftime("%H:%M") + "~" + shift_end[m][n].strftime("%H:%M"))

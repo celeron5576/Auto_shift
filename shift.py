@@ -30,6 +30,7 @@ shift_start = [[0 for i in range(col - 3)] for j in range(3)]
 shift_end = [[0 for i in range(col - 3)] for j in range(3)]
 shift_people = [[0 for i in range(col - 3)] for j in range(3)]
 
+week = ["月" ,"火" ,"水" ,"木" ,"金" ,"土" ,"日"]
 
 a = 1
 for i in range(10):
@@ -47,8 +48,17 @@ start_working_temp = copy.deepcopy(start_working)
 end_working_temp = copy.deepcopy(end_working)
 
 level = [0,0,0,0,0,0,0,0,0,0]
+user_name = []
 for m in range(10):
     level[m] = df.iloc[(m * 2)][1]
+    user_name.append(df.iloc[(m * 2)][0])
+
+
+date = list(df.columns)
+del date[:3]
+for t in range(len(date)):
+    week_temp = date[t].weekday()
+    date[t] = date[t].strftime("%m月%d日" + "(" + week[week_temp] + ")")
 
 for aa in range(10):
     for aaa in range(col - 3):
@@ -116,7 +126,7 @@ def main():
             temp_number = random.choice(temp_more)
             temp_more.remove(temp_number)
             #print(temp_number)
-            shift_in(temp_number)
+            shift_in(temp_number)                                   #エラー起きる！！！！！！！！！！！！！！！！！！！
         count = shift_count(start_working)
         #print("#############################")
         #print(less_people)
@@ -129,6 +139,9 @@ def main():
     print(shift_start)
     print(shift_end)
     print(shift_people)
+
+
+    hyouzi()
 
 ####################################################################################
 #出勤可能日をカウントする関数
@@ -182,7 +195,7 @@ def shift_in(people):
     while(boo == 0):
         print(people)
         print(syukkinn_kanoubi)
-        temp = random.choice(syukkinn_kanoubi[people])
+        temp = random.choice(syukkinn_kanoubi[people])#############################################エラー起きる!!!!!!!!!!!!!!!!
         if shift_start[0][temp] == 0:
             shift_start[0][temp] = start_working[people][temp]
             shift_end[0][temp] = end_working[people][temp]
@@ -263,25 +276,39 @@ def time_bool():
         if (shift_start_temp > datetime.time(9,0)) & (shift_end_temp < datetime.time(15,30)):
             for t in end_working_temp:
                 if t[p] != 0:
-                    if (t[p] <= datetime.time(9,0)) & (t[p] >= datetime.time(15,30)):
+                    if (t[p] <= datetime.time(9,0)) & (t[p] >= datetime.time(15,30)) & (t != (shift_people[0][p] - 1)) & (t != (shift_people[1][p] - 1)):
                         shift_start[0][p] = start_working[t][p]
                         shift_end[0][p] = end_working[t][p]
         #初めのほうのみ欠損あり
         if (shift_start_temp > datetime.time(9,0)) & (shift_end_temp >= datetime.time(15,30)):
             for r in start_working_temp:
                 if r[p] != 0:
-                    if r[p] <= datetime.time(9,0):
+                    if r[p] <= datetime.time(9,0) & (t != (shift_people[0][p] - 1)) & (t != (shift_people[1][p] - 1)):
                         shift_start[0][p] = start_working[t][p]
                         shift_end[0][p] = end_working[t][p]
         #終わりのほうのみ欠損あり
         if  (shift_start_temp <= datetime.time(9,0)) & (shift_end_temp < datetime.time(15,30)):
             for s in end_working_temp:
                 if s[p] != 0:
-                    if s[p] >= datetime.time(15,30):
+                    if s[p] >= datetime.time(15,30) & (t != (shift_people[0][p] - 1)) & (t != (shift_people[1][p] - 1)):
                         shift_start[0][p] = start_working[t][p]
                         shift_end[0][p] = end_working[t][p]
 
+def hyouzi():
+    shift = pd.DataFrame(columns=user_name ,index= date)
+
+    print(shift_start)
+    print(shift_people)
+    for n in range(len(shift_start[0])):
+        for m in range(3):
+            if (shift_start[m][n] != 0) & (shift_people[m][n] != 0):
+                shift.iloc[n ,(shift_people[m][n] - 1)] = (shift_start[m][n].strftime("%H:%M") + "～" + shift_end[m][n].strftime("%H:%M"))
+
+    print("Empty Dataframe ", shift, sep='\n')
+
+    shift.to_excel('Auto_shift.xlsx', sheet_name='shift1')
 
 
+    
 if __name__ == "__main__":
     main()
