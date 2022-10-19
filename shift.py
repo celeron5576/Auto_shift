@@ -12,16 +12,19 @@ time_sta = time.time()
 #excelの読み込み
 df = pd.read_excel('test_shift.xlsx' ,sheet_name=0 ,index_col=0)
 
+
+penalty_temp = 1000000
+
 ######################################################################################################
-for i in range(1):
+for cycle in range(10000):
 ######################################################################################################
+
     col = len(df.columns)
     start_working = []
     temp_working = []
     end_working = []
     shift_start = []
     shift_end = []
-
 
     #出勤可能日の開始時間と終了時間を配列で表す。配列はすべて0で埋めて初期化
     #横の列が日ごとの出勤開始時間(終了時間)、縦の列が人(Aさん、Bさん、Cさん、Dさん、、、)
@@ -34,13 +37,19 @@ for i in range(1):
 
 
     total_salary = []
+    salary_pull = []
     for x in range(10):
         if not (pd.isnull(df.iat[x * 2 ,0])):
             total_salary.append(0)
+            salary_pull.append(0)
 
     shift_start = [[0 for i in range(col - 3)] for j in range(3)]
     shift_end = [[0 for i in range(col - 3)] for j in range(3)]
     shift_people = [[0 for i in range(col - 3)] for j in range(3)]
+
+    shift_start_deci = [[0 for i in range(col - 3)] for j in range(3)]
+    shift_end_deci = [[0 for i in range(col - 3)] for j in range(3)]
+    shift_people_deci = [[0 for i in range(col - 3)] for j in range(3)]
 
     week = ["月" ,"火" ,"水" ,"木" ,"金" ,"土" ,"日"]
 
@@ -150,10 +159,26 @@ for i in range(1):
         #print(temp_more)
         #print(shift_start)
         #print(shift_end)
-        print(shift_people)
+        #print(shift_people)
 
 
-        eval()
+        penalty = eval()
+
+        if cycle == 0:
+            penalty_temp = 1000000
+        
+
+        """
+        if penalty < penalty_temp:
+            shift_people_deci =  copy.deepcopy(shift_people)
+            shift_start_deci = copy.deepcopy(shift_start)
+            shift_end_deci =  copy.deepcopy(shift_end)
+            penalty_temp = penalty
+        """
+        if cycle == 999:
+            hyouzi(shift_people_deci ,shift_start_deci , shift_end_deci)
+
+
     ####################################################################################
     #出勤可能日をカウントする関数
     ####################################################################################
@@ -184,7 +209,7 @@ for i in range(1):
         temp_less = []
         b = 0
         for cou in less:
-            if (cou <= int((col-3)/7)) & (cou != 0):
+            if (cou <= int((col-3)/7)) and (cou != 0):
                 less_people[b] = 1
                 temp_less.append(b)
             if cou == 0:
@@ -276,7 +301,7 @@ for i in range(1):
     ####################################################################################
     def time_bool():
         for p in range(col - 3):
-            if (shift_start[0][p] != 0) & (shift_start[1][p] != 0):
+            if (shift_start[0][p] != 0) and (shift_start[1][p] != 0):
                 if shift_start[0][p] >= shift_start[1][p]:
                     shift_start_temp = shift_start[1][p]
                 else:
@@ -286,34 +311,34 @@ for i in range(1):
                 else:
                     shift_end_temp = shift_end[0][p]
             #はじめも終わりも欠損あり
-            if (shift_start_temp > datetime.time(9,0)) & (shift_end_temp < datetime.time(15,30)):
+            if (shift_start_temp > datetime.time(9,0)) and (shift_end_temp < datetime.time(15,30)):
                 for t in end_working_temp:
                     if t[p] != 0:
-                        if (t[p] <= datetime.time(9,0)) & (t[p] >= datetime.time(15,30)) & (t != (shift_people[0][p] - 1)) & (t != (shift_people[1][p] - 1)):
+                        if (t[p] <= datetime.time(9,0)) and (t[p] >= datetime.time(15,30)) and (t != (shift_people[0][p] - 1)) and (t != (shift_people[1][p] - 1)):
                             shift_start[0][p] = start_working[t][p]
                             shift_end[0][p] = end_working[t][p]
             #初めのほうのみ欠損あり
-            if (shift_start_temp > datetime.time(9,0)) & (shift_end_temp >= datetime.time(15,30)):
+            if (shift_start_temp > datetime.time(9,0)) and (shift_end_temp >= datetime.time(15,30)):
                 for r in start_working_temp:
                     if r[p] != 0:
-                        if r[p] <= datetime.time(9,0) & (t != (shift_people[0][p] - 1)) & (t != (shift_people[1][p] - 1)):
+                        if r[p] <= datetime.time(9,0) and (t != (shift_people[0][p] - 1)) and (t != (shift_people[1][p] - 1)):
                             shift_start[0][p] = start_working[t][p]
                             shift_end[0][p] = end_working[t][p]
             #終わりのほうのみ欠損あり
-            if  (shift_start_temp <= datetime.time(9,0)) & (shift_end_temp < datetime.time(15,30)):
+            if  (shift_start_temp <= datetime.time(9,0)) and (shift_end_temp < datetime.time(15,30)):
                 for s in end_working_temp:
                     if s[p] != 0:
-                        if s[p] >= datetime.time(15,30) & (t != (shift_people[0][p] - 1)) & (t != (shift_people[1][p] - 1)):
+                        if s[p] >= datetime.time(15,30) and (t != (shift_people[0][p] - 1)) and (t != (shift_people[1][p] - 1)):
                             shift_start[0][p] = start_working[t][p]
                             shift_end[0][p] = end_working[t][p]
 
-    def hyouzi():
+    def hyouzi(people_deci ,start_deci ,end_deci):
         shift = pd.DataFrame(columns=user_name ,index= date)
 
-        for n in range(len(shift_start[0])):
+        for n in range(len(start_deci[0])):
             for m in range(3):
-                if (shift_start[m][n] != 0) & (shift_people[m][n] != 0):
-                    shift.iloc[n ,(shift_people[m][n] - 1)] = (shift_start[m][n].strftime("%H:%M") + "～" + shift_end[m][n].strftime("%H:%M"))
+                if (start_deci[m][n] != 0) and (people_deci[m][n] != 0):
+                    shift.iloc[n ,(people_deci[m][n] - 1)] = (start_deci[m][n].strftime("%H:%M") + "～" + end_deci[m][n].strftime("%H:%M"))
 
         #print("Empty Dataframe ", shift, sep='\n')
 
@@ -321,21 +346,23 @@ for i in range(1):
 
 
     def eval():
+        penalty = 0
         for u in range(3):
             for w in range(col - 3):
                 if shift_start[u][w] != 0:
                     temp_time_start = int(shift_start[u][w].strftime('%H')) + (int(shift_start[u][w].strftime('%M'))/60)
                     temp_time_end = int(shift_end[u][w].strftime('%H')) + (int(shift_end[u][w].strftime('%M'))/60)
                     if temp_time_end - temp_time_start >= 7:
-                        total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start - 0.75
+                        total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start
                     else:
                         total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start
         
         people_shift_binary = [[0 for i in range(col - 3)] for j in range(10)]
+        #(shift_people)
         for ab in range(10):
             for y in range(3):
                 for z in range(col - 3):
-                    if shift_people[y][z] == ab:
+                    if (shift_people[y][z] - 1) == ab and (shift_people[y][z]) != 0:
                         people_shift_binary[ab][z] = 1
         people_shift_number = [[] ,[] ,[] ,[] ,[] ,[] ,[] ,[] ,[] ,[]]
         temp_shift_binary = 0
@@ -346,9 +373,39 @@ for i in range(1):
                 temp_shift_binary += 1
             temp_shift_binary = 0
         
-        print(people_shift_number)
-        print(total_salary)
+        #print("何日にシフトに入るか:")
+        #print(people_shift_number)
+        #print("合計金額/1000")
+        #print(total_salary)                                             #############################ここおかしい
+        salary_temp = 0
+        for total_salary_temp in total_salary:
+            salary_temp += total_salary_temp * 1000
+        for i in range(len(total_salary)):
+            salary_pull[i] = int(salary_temp / len(total_salary)) - (total_salary[i] * 1000)
+        #print(salary_pull)
+        for i in range(len(salary_pull)):
+            if salary_pull[i] <= 5000 and salary_pull[i] >= -5000:
+                salary_pull[i] = 0
+            elif salary_pull[i] < 0:
+                salary_pull[i] = -salary_pull[i] - 5000
+            else:
+                salary_pull[i] = salary_pull[i] - 5000
         
+        #print(salary_pull)
+        for i in salary_pull:
+            penalty += i / 2000 * 3
+        
+        #print(penalty)
+
+        for i in range(len(people_shift_number)):
+            for j in range(len(people_shift_number[i]) - 1):
+                if (people_shift_number[i][j + 1] - people_shift_number[i][j]) < 3:
+                    penalty += (people_shift_number[i][j + 1] - people_shift_number[i][j]) * 5
+        
+        #print(penalty)
+        return penalty
+
+
     if __name__ == "__main__":
         main()
 
