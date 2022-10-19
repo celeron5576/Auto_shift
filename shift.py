@@ -11,7 +11,6 @@
 
 
 import pandas as pd
-import sys
 import random
 import datetime
 import copy
@@ -210,7 +209,7 @@ def eval():
                 temp_time_start = int(shift_start[u][w].strftime('%H')) + (int(shift_start[u][w].strftime('%M'))/60)
                 temp_time_end = int(shift_end[u][w].strftime('%H')) + (int(shift_end[u][w].strftime('%M'))/60)
                 if temp_time_end - temp_time_start >= 7:
-                    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start
+                    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start - 0.75
                 else:
                     total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start
     
@@ -261,6 +260,31 @@ def eval():
     
     #print(penalty)
     return penalty
+
+
+def shiage():
+    sabunn = [[0 ,0] ,[0 ,0] ,[0 ,0]]
+    sabunn_start = 0
+    sabunn_end = 0
+    for w in range(col - 3):
+        for u in range(3):
+            if shift_start[u][w] != 0:
+                temp_time_start = int(shift_start[u][w].strftime('%H')) + (int(shift_start[u][w].strftime('%M'))/60)
+                temp_time_end = int(shift_end[u][w].strftime('%H')) + (int(shift_end[u][w].strftime('%M'))/60)
+                if temp_time_start > 10.0:
+                    sabunn[u][0] =  temp_time_start - 10
+                if temp_time_end < 15.0:
+                    sabunn[u][1] =  15 - temp_time_end
+
+        for i in range(3):
+            sabunn_start += sabunn[i][0]
+            sabunn_end += sabunn[i][0]
+        
+        if (sabunn_end != 0):               ###################################################################
+            for 
+        sabunn_start = 0
+        sabunn_end = 0
+
 
 
 ########################################################################################################################################################################
@@ -414,6 +438,7 @@ for cycle in range(cycle_number):
     #print(shift_end)
     #print(shift_people)
 
+    shiage()
 
     penalty = eval()
 
