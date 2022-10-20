@@ -9,8 +9,6 @@
 #14:00~15:30にはlevel4が入っていたら一人で良いという処理
 #コードがぐちゃぐちゃだから書き直し
 ####################################################################################
-
-
 import pandas as pd
 import random
 import datetime
@@ -282,38 +280,39 @@ def shiage():
     sabunn_start = 0
     sabunn_end = 0
     for w in range(col - 3):
-        for u in range(3):
-            if shift_start[u][w] != 0:
-                temp_time_start = int(shift_start[u][w].strftime('%H')) + (int(shift_start[u][w].strftime('%M'))/60)
-                temp_time_end = int(shift_end[u][w].strftime('%H')) + (int(shift_end[u][w].strftime('%M'))/60)
-                if temp_time_start > 10.0:
-                    sabunn[u][0] =  temp_time_start - 10
-                if temp_time_end < 15.0:
-                    sabunn[u][1] =  15 - temp_time_end
+        if shift_people[3][w] == 0:
+            for u in range(3):
+                if shift_start[u][w] != 0:
+                    temp_time_start = int(shift_start[u][w].strftime('%H')) + (int(shift_start[u][w].strftime('%M'))/60)
+                    temp_time_end = int(shift_end[u][w].strftime('%H')) + (int(shift_end[u][w].strftime('%M'))/60)
+                    if temp_time_start > 10.0:
+                        sabunn[u][0] =  temp_time_start - 10
+                    if temp_time_end < 15.0:
+                        sabunn[u][1] =  15 - temp_time_end
 
-        for i in range(3):
-            sabunn_start += sabunn[i][0]
-            sabunn_end += sabunn[i][0]
-        
-        if (sabunn_start != 0):
-            for p in range(col - 3):
-                for t in start_working_temp:
-                    if t[p] != 0:
-                        if (t[p] <= datetime.time(9 ,0)) and (t != (shift_people[0][p] - 1)) and (t != (shift_people[1][p] - 1)):
-                            shift_start[0][p] = start_working[t][p]
-                            shift_end[0][p] = end_working[t][p]
+            for i in range(3):
+                sabunn_start += sabunn[i][0]
+                sabunn_end += sabunn[i][0]
+            
+            if (sabunn_start != 0):
+                for p in range(col - 3):
+                    for t in start_working_temp:
+                        if t[p] != 0:
+                            if (t[p] <= datetime.time(9 ,0)) and (t != (shift_people[0][p] - 1)) and (t != (shift_people[1][p] - 1)):
+                                shift_start[0][p] = start_working[t][p]
+                                shift_end[0][p] = end_working[t][p]
 
-        if (sabunn_end != 0):
-            for p in range(col - 3):
-                for t in end_working_temp:
-                    if t[p] != 0:
-                        if (t[p] >= datetime.time(15,30)) and (t != (shift_people[0][p] - 1)) and (t != (shift_people[1][p] - 1)):
-                            shift_start[0][p] = start_working[t][p]
-                            shift_end[0][p] = end_working[t][p]
+            if (sabunn_end != 0):
+                for p in range(col - 3):
+                    for t in end_working_temp:
+                        if t[p] != 0:
+                            if (t[p] >= datetime.time(15,30)) and (t != (shift_people[0][p] - 1)) and (t != (shift_people[1][p] - 1)):
+                                shift_start[0][p] = start_working[t][p]
+                                shift_end[0][p] = end_working[t][p]
 
-            print("a")
-        sabunn_start = 0
-        sabunn_end = 0
+                print("a")
+            sabunn_start = 0
+            sabunn_end = 0
 
 
 
