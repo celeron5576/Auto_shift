@@ -15,7 +15,28 @@ import datetime
 import copy
 import time
 import statistics
-import math
+
+
+####################################################################################
+#col : 列数
+#df：読み込むシフト表
+#level：従業員のレベル
+#people_shift_number_temp：従業員が何日目にシフトに入るかを入れる配列
+#people_shift_number_temp_temp：同上
+#people_shift_number：同上
+#user_name：従業員の名前
+#count：何日シフトに入るかをカウントする配列
+#countt:同上
+#shift_start：何時からシフトに入るか
+#shift_end：何時までシフトに入るか
+#shift_people：誰がシフトに入るか
+#start_working：従業員ごとの出勤可能時間のはじめ
+#end_working：従業員ごとの出勤可能時間の終わり
+#less_people：出勤可能日が一定数以下かを入れる変数 0が以上1が未満
+#syukkinn_kanou：
+#syukkinn_kanoubi：
+
+####################################################################################
 
 
 time_sta = time.time()
@@ -225,19 +246,21 @@ def eval():
     for u in range(3):
         for w in range(col - 3):
             if shift_start[u][w] != 0:
-                temp_time_start = int(shift_start[u][w].strftime('%H')) + (int(shift_start[u][w].strftime('%M'))/60)
+                temp_time_start = int(shift_start[u][w].strftime('%H')) + (int(shift_start[u][w].strftime('%M'))/60)            ###################################
                 temp_time_end = int(shift_end[u][w].strftime('%H')) + (int(shift_end[u][w].strftime('%M'))/60)
-                if temp_time_end - temp_time_start >= 7:
-                    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start
-                else:
-                    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start
+                total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start + 1
+                #if temp_time_end - temp_time_start >= 7:
+                #    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start + 1
+                #    print(temp_time_end - temp_time_start + 1)
+                #else:
+                #    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start + 1
     
     people_shift_binary = [[0 for i in range(col - 3)] for j in range(10)]
     #(shift_people)
     for ab in range(10):
         for y in range(3):
             for z in range(col - 3):
-                if (shift_people[y][z] - 1) == ab and (shift_people[y][z]) != 0:
+                if (shift_people[y][z] - 1) == ab:
                     people_shift_binary[ab][z] = 1
     people_shift_number = [[] ,[] ,[] ,[] ,[] ,[] ,[] ,[] ,[] ,[]]
     temp_shift_binary = 0
@@ -257,9 +280,12 @@ def eval():
     for total_salary_temp in total_salary:
         salary_temp += (total_salary_temp * 1000)
     for i in range(len(total_salary)):
+
+        ####################################################################################
+        #salary_pullを平均値にするか中央値にするか問題。上が平均値、したが中央値
+        ####################################################################################
         #salary_pull[i] = int(salary_temp / len(total_salary)) - (total_salary[i] * 1000)
         salary_pull[i] = (statistics.median(total_salary)) - (total_salary[i] * 1000)
-    #print(salary_pull)
     for i in range(len(salary_pull)):
         if salary_pull[i] <= 3000 and salary_pull[i] >= -3000:
             salary_pull[i] = 0
@@ -421,14 +447,6 @@ for cycle in range(cycle_number):
             shift_in(temp_number)
         count = shift_count(start_working)
         less_people,temp_less = less_people_bool(count)
-    #print(count)
-    #print(less_people)
-    #print(temp_less)
-    #print(shift_start)
-    #print(shift_people)
-    #print(start_working)
-    #print(end_working)
-
 
 
 
@@ -447,11 +465,6 @@ for cycle in range(cycle_number):
 
     more_people,temp_more = more_people_bool(count)
 
-    #print(more_people)
-    #print(temp_more)
-    #print(count)
-
-
     while(1 in more_people):
         for g in range(len(temp_more)):
             temp_number = random.choice(temp_more)
@@ -459,19 +472,11 @@ for cycle in range(cycle_number):
             #print(temp_number)
             shift_in(temp_number)                                   #エラー起きる！！！！！！！！！！！！！！！！！！！
         count = shift_count(start_working)
-        #print("#############################")
-        #print(less_people)
-        #print(temp_less)
-        #print("#############################")
         more_people,temp_more = more_people_bool(count)
-    #print(count)
-    #print(more_people)
-    #print(temp_more)
-    #print(shift_start)
-    #print(shift_end)
-    #print(shift_people)
-
     shiage()
+
+    print(shift_start)
+    print(shift_people)
 
     penalty ,people_shift_number_temp = eval()
 
@@ -487,7 +492,7 @@ for cycle in range(cycle_number):
 
         aaa = []
         for a in people_shift_number_temp_temp:
-            aaa.append(len(a) * 7.5)
+            aaa.append(len(a) * 8.5)
         print(aaa)
 
     if cycle == cycle_number - 1:
@@ -502,6 +507,6 @@ for cycle in range(cycle_number):
 time.sleep(1)
 time_end = time.time()
 # 経過時間（秒）
-tim = time_end- time_sta
+tim = time_end - time_sta
 
 print(tim)
