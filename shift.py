@@ -21,7 +21,7 @@ import math
 time_sta = time.time()
 
 
-cycle_number = 2000
+
 penalty_temp = 1000000
 
 
@@ -29,8 +29,10 @@ penalty_temp = 1000000
 
 #excelの読み込み
 df = pd.read_excel('test_shift.xlsx' ,sheet_name=0 ,index_col=0)
+cycle_number = int(df.iloc[24][13])
 col = len(df.columns)
 week = ["月" ,"火" ,"水" ,"木" ,"金" ,"土" ,"日"]
+people_shift_number_temp = [[] ,[] ,[] ,[] ,[] ,[] ,[] ,[] ,[] ,[]]
 level = [0,0,0,0,0,0,0,0,0,0]
 user_name = []
 user_status = list(df.index)
@@ -226,7 +228,7 @@ def eval():
                 temp_time_start = int(shift_start[u][w].strftime('%H')) + (int(shift_start[u][w].strftime('%M'))/60)
                 temp_time_end = int(shift_end[u][w].strftime('%H')) + (int(shift_end[u][w].strftime('%M'))/60)
                 if temp_time_end - temp_time_start >= 7:
-                    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start - 0.75
+                    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start
                 else:
                     total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start
     
@@ -248,6 +250,7 @@ def eval():
     
     #print("何日にシフトに入るか:")
     #print(people_shift_number)
+    people_shift_number_temp = copy.deepcopy(people_shift_number)
     #print("合計金額/1000")
     #print(total_salary)                                             #############################ここおかしい
     salary_temp = 0
@@ -283,7 +286,7 @@ def eval():
                 penalty += (people_shift_number[i][j + 1] - people_shift_number[i][j]) * 5
     
     #print(penalty)
-    return penalty
+    return penalty ,people_shift_number_temp
 
 
 def shiage():
@@ -291,7 +294,7 @@ def shiage():
     sabunn_start = 0
     sabunn_end = 0
     for w in range(col - 3):
-        if shift_people[3][w] == 0:
+        if shift_people[2][w] == 0:
             for u in range(3):
                 if shift_start[u][w] != 0:
                     temp_time_start = int(shift_start[u][w].strftime('%H')) + (int(shift_start[u][w].strftime('%M'))/60)
@@ -306,22 +309,20 @@ def shiage():
                 sabunn_end += sabunn[i][0]
             
             if (sabunn_start != 0):
-                for p in range(col - 3):
-                    for t in start_working_temp:
-                        if t[p] != 0:
-                            if (t[p] <= datetime.time(9 ,0)) and (t != (shift_people[0][p] - 1)) and (t != (shift_people[1][p] - 1)):
-                                shift_start[0][p] = start_working[t][p]
-                                shift_end[0][p] = end_working[t][p]
+                for p in range(len(shift_people)):
+                    if start_working_temp[p][w] != 0:
+                        if (start_working_temp[p][w] <= datetime.time(9 ,0)) and (p != (shift_people[0][p] - 1)) and (p != (shift_people[1][p] - 1)):
+                                shift_start[2][p] = start_working[p][w]
+                                shift_end[2][p] = end_working[p][w]
 
             if (sabunn_end != 0):
-                for p in range(col - 3):
-                    for t in end_working_temp:
-                        if t[p] != 0:
-                            if (t[p] >= datetime.time(15,30)) and (t != (shift_people[0][p] - 1)) and (t != (shift_people[1][p] - 1)):
-                                shift_start[0][p] = start_working[t][p]
-                                shift_end[0][p] = end_working[t][p]
+                for p in range(len(shift_people)):
+                    if start_working_temp[p][w] != 0:
+                        if (end_working_temp[p][w] >= datetime.time(15 ,30)) and (p != (shift_people[0][p] - 1)) and (p != (shift_people[1][p] - 1)):
+                                shift_start[2][p] = start_working[p][w]
+                                shift_end[2][p] = end_working[p][w]
 
-                print("a")
+
             sabunn_start = 0
             sabunn_end = 0
 
@@ -470,9 +471,9 @@ for cycle in range(cycle_number):
     #print(shift_end)
     #print(shift_people)
 
-    #shiage()
+    shiage()
 
-    penalty = eval()
+    penalty ,people_shift_number_temp = eval()
 
 
     if penalty < penalty_temp:
@@ -480,7 +481,14 @@ for cycle in range(cycle_number):
         shift_start_deci = copy.deepcopy(shift_start)
         shift_end_deci =  copy.deepcopy(shift_end)
         total_salary_deci = copy.deepcopy(total_salary)
+        people_shift_number_temp_temp = copy.deepcopy(people_shift_number_temp)
+        print(people_shift_number_temp_temp)
         penalty_temp = penalty
+
+        aaa = []
+        for a in people_shift_number_temp_temp:
+            aaa.append(len(a) * 7.5)
+        print(aaa)
 
     if cycle == cycle_number - 1:
         print(penalty_temp)
