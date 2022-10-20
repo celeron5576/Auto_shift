@@ -7,6 +7,7 @@
 #10:00~15:00に2人以上入っているかの処理
 #中途半端だったり、短時間のシフト処理
 #14:00~15:30にはlevel4が入っていたら一人で良いという処理
+#コードがぐちゃぐちゃだから書き直し
 ####################################################################################
 
 
@@ -20,6 +21,7 @@ time_sta = time.time()
 
 
 cycle_number = 1000
+penalty_temp = 1000000
 
 
 #print(pd.__version__)
@@ -27,6 +29,13 @@ cycle_number = 1000
 #excelの読み込み
 df = pd.read_excel('test_shift.xlsx' ,sheet_name=0 ,index_col=0)
 col = len(df.columns)
+week = ["月" ,"火" ,"水" ,"木" ,"金" ,"土" ,"日"]
+level = [0,0,0,0,0,0,0,0,0,0]
+user_name = []
+user_status = list(df.index)
+for m in range(10):
+    level[m] = df.iloc[(m * 2)][1]
+    user_name.append(df.iloc[(m * 2)][0])
 
 
 ########################################################################################################################################################################
@@ -246,7 +255,13 @@ def eval():
             salary_pull[i] = -salary_pull[i] - 5000
         else:
             salary_pull[i] = salary_pull[i] - 5000
-    
+
+    for l in range(len(salary_pull)):
+        if (temp_less_people[l] == "1") or (user_status[l] == "社員"):
+            salary_pull[l] = 0
+
+
+
     #print(salary_pull)
     for i in salary_pull:
         penalty += i / 2000 * 3
@@ -280,8 +295,23 @@ def shiage():
             sabunn_start += sabunn[i][0]
             sabunn_end += sabunn[i][0]
         
-        if (sabunn_end != 0):               ###################################################################
-            for 
+        if (sabunn_start != 0):
+            for p in range(col - 3):
+                for t in start_working_temp:
+                    if t[p] != 0:
+                        if (t[p] <= datetime.time(9 ,0)) and (t != (shift_people[0][p] - 1)) and (t != (shift_people[1][p] - 1)):
+                            shift_start[0][p] = start_working[t][p]
+                            shift_end[0][p] = end_working[t][p]
+
+        if (sabunn_end != 0):
+            for p in range(col - 3):
+                for t in end_working_temp:
+                    if t[p] != 0:
+                        if (t[p] >= datetime.time(15,30)) and (t != (shift_people[0][p] - 1)) and (t != (shift_people[1][p] - 1)):
+                            shift_start[0][p] = start_working[t][p]
+                            shift_end[0][p] = end_working[t][p]
+
+            print("a")
         sabunn_start = 0
         sabunn_end = 0
 
@@ -292,7 +322,7 @@ def shiage():
 ########################################################################################################################################################################
 ########################################################################################################################################################################
 
-penalty_temp = 1000000
+
 
 
 for cycle in range(cycle_number):
@@ -327,8 +357,6 @@ for cycle in range(cycle_number):
     shift_end_deci = [[0 for i in range(col - 3)] for j in range(3)]
     shift_people_deci = [[0 for i in range(col - 3)] for j in range(3)]
 
-    week = ["月" ,"火" ,"水" ,"木" ,"金" ,"土" ,"日"]
-
     a = 1
     for i in range(10):
         #シフトが入力された部分のみを繰り返す。欠損値じゃなければ出勤可能日カウントを1増やす
@@ -343,12 +371,6 @@ for cycle in range(cycle_number):
 
     start_working_temp = copy.deepcopy(start_working)
     end_working_temp = copy.deepcopy(end_working)
-
-    level = [0,0,0,0,0,0,0,0,0,0]
-    user_name = []
-    for m in range(10):
-        level[m] = df.iloc[(m * 2)][1]
-        user_name.append(df.iloc[(m * 2)][0])
 
 
     date = list(df.columns)
@@ -372,7 +394,7 @@ for cycle in range(cycle_number):
     #countには従業員ごとの出勤可能日数が入っている
     ####################################################################################
     less_people,temp_less = less_people_bool(countt)
-
+    temp_less_people = copy.deepcopy(less_people)
     ####################################################################################
     #出勤可能日が一定値以下の人を取り出してシフトに入れるプログラム
     #less_peopleに閾値以下の物がある限り繰り返し続ける(0以外)
@@ -438,7 +460,7 @@ for cycle in range(cycle_number):
     #print(shift_end)
     #print(shift_people)
 
-    shiage()
+    #shiage()
 
     penalty = eval()
 
