@@ -14,11 +14,14 @@ import random
 import datetime
 import copy
 import time
+import statistics
+import math
+
 
 time_sta = time.time()
 
 
-cycle_number = 2
+cycle_number = 2000
 penalty_temp = 1000000
 
 
@@ -196,16 +199,21 @@ def time_bool():
                         shift_end[0][p] = end_working[t][p]
 
 def hyouzi(people_deci ,start_deci ,end_deci):
-    shift = pd.DataFrame(columns=user_name ,index= date)
+    temp_date = copy.deepcopy(date)
+    temp_date.append(" ")
+    temp_date.append("お給料")
+    shift = pd.DataFrame(columns = user_name ,index = temp_date)
 
     for n in range(len(start_deci[0])):
         for m in range(3):
             if (start_deci[m][n] != 0) and (people_deci[m][n] != 0):
                 shift.iloc[n ,(people_deci[m][n] - 1)] = (start_deci[m][n].strftime("%H:%M") + "～" + end_deci[m][n].strftime("%H:%M"))
 
-    #print("Empty Dataframe ", shift, sep='\n')
-    #for r in range(len(total_salary)):
-    #    shift.iloc[28 ,r] = ("約" + str(total_salary[r]) + "円")
+    #("Empty Dataframe ", shift, sep='\n')
+    for r in range(len(total_salary)):
+        #print("Empty Dataframe ", shift, sep='\n')
+        shift.iloc[len(shift.index) - 1 ,r] = ("約" + str('{:,}'.format(int(total_salary[r] * 1000))) + "円")
+        
 
     shift.to_excel('Auto_shift.xlsx', sheet_name='shift1')
 
@@ -244,17 +252,18 @@ def eval():
     #print(total_salary)                                             #############################ここおかしい
     salary_temp = 0
     for total_salary_temp in total_salary:
-        salary_temp += total_salary_temp * 1000
+        salary_temp += (total_salary_temp * 1000)
     for i in range(len(total_salary)):
-        salary_pull[i] = int(salary_temp / len(total_salary)) - (total_salary[i] * 1000)
+        #salary_pull[i] = int(salary_temp / len(total_salary)) - (total_salary[i] * 1000)
+        salary_pull[i] = (statistics.median(total_salary)) - (total_salary[i] * 1000)
     #print(salary_pull)
     for i in range(len(salary_pull)):
-        if salary_pull[i] <= 5000 and salary_pull[i] >= -5000:
+        if salary_pull[i] <= 3000 and salary_pull[i] >= -3000:
             salary_pull[i] = 0
         elif salary_pull[i] < 0:
-            salary_pull[i] = -salary_pull[i] - 5000
+            salary_pull[i] = -salary_pull[i] - 3000
         else:
-            salary_pull[i] = salary_pull[i] - 5000
+            salary_pull[i] = salary_pull[i] - 3000
 
     for l in range(len(salary_pull)):
         if (temp_less_people[l] == "1") or (user_status[l] == "社員"):
@@ -264,7 +273,7 @@ def eval():
 
     #print(salary_pull)
     for i in salary_pull:
-        penalty += i / 2000 * 5
+        penalty += i / 500
     
     #print(penalty)
 
@@ -470,6 +479,7 @@ for cycle in range(cycle_number):
         shift_people_deci =  copy.deepcopy(shift_people)
         shift_start_deci = copy.deepcopy(shift_start)
         shift_end_deci =  copy.deepcopy(shift_end)
+        total_salary_deci = copy.deepcopy(total_salary)
         penalty_temp = penalty
 
     if cycle == cycle_number - 1:
