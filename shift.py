@@ -18,7 +18,7 @@ import time
 time_sta = time.time()
 
 
-cycle_number = 1000
+cycle_number = 2
 penalty_temp = 1000000
 
 
@@ -204,6 +204,8 @@ def hyouzi(people_deci ,start_deci ,end_deci):
                 shift.iloc[n ,(people_deci[m][n] - 1)] = (start_deci[m][n].strftime("%H:%M") + "～" + end_deci[m][n].strftime("%H:%M"))
 
     #print("Empty Dataframe ", shift, sep='\n')
+    #for r in range(len(total_salary)):
+    #    shift.iloc[28 ,r] = ("約" + str(total_salary[r]) + "円")
 
     shift.to_excel('Auto_shift.xlsx', sheet_name='shift1')
 
@@ -262,7 +264,7 @@ def eval():
 
     #print(salary_pull)
     for i in salary_pull:
-        penalty += i / 2000 * 3
+        penalty += i / 2000 * 5
     
     #print(penalty)
 
@@ -472,6 +474,7 @@ for cycle in range(cycle_number):
 
     if cycle == cycle_number - 1:
         print(penalty_temp)
+        print(total_salary)
         hyouzi(shift_people ,shift_start ,shift_end)
 
 
