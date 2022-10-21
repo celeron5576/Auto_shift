@@ -121,27 +121,31 @@ def shift_in(people):
         #print(people)
         #print(syukkinn_kanoubi)
         #print(people)
-        try:
-            temp = random.choice(syukkinn_kanoubi[people])#############################################エラー起きる!!!!!!!!!!!!!!!!
-            if shift_start[0][temp] == 0:
-                shift_start[0][temp] = start_working[people][temp]
-                shift_end[0][temp] = end_working[people][temp]
-                shift_people[0][temp] = people + 1
-                boo = 1
-            elif shift_start[1][temp] == 0:
-                people = level_bool(level[people] ,people ,temp)
-                shift_start[1][temp] = start_working[people][temp]
-                shift_end[1][temp] = end_working[people][temp]
-                shift_people[1][temp] = people + 1
-                boo = 1
-            syukkinn_kanou[people][temp] = 0
-            start_working[people][temp] = 0
-            end_working[people][temp] = 0
-            syukkinn_kanoubi[people].remove(temp)
-            if not (1 in syukkinn_kanou):
-                boo = 1
-        except:
+        print(syukkinn_kanoubi)
+        tekito = 0
+        temp = random.choice(syukkinn_kanoubi[people])#############################################エラー起きる!!!!!!!!!!!!!!!!
+        if shift_start[0][temp] == 0:
+            shift_start[0][temp] = start_working[people][temp]
+            shift_end[0][temp] = end_working[people][temp]
+            shift_people[0][temp] = people + 1
             boo = 1
+            tekito = 0
+        elif shift_start[1][temp] == 0:
+            #people何人目か どこのシフトか どのレベルか
+            people,tekito = level_bool(level[people] ,people ,temp)
+            shift_start[1][temp] = start_working[people][temp]
+            shift_end[1][temp] = end_working[people][temp]
+            shift_people[1][temp] = people + 1
+            boo = 1
+        syukkinn_kanou[people][temp] = 0
+        start_working[people][temp] = 0
+        end_working[people][temp] = 0
+        syukkinn_kanoubi[people].remove(temp)
+        if not (1 in syukkinn_kanou):
+            boo = 1
+        if tekito == 1:
+            tekito = "sono"
+    return people ,tekito
 
 def shift_in_adjust(people,temp):
     if shift_start[0][temp] == 0:
@@ -167,22 +171,47 @@ def more_people_bool(more):
         b += 1
     return more_people,temp_more
 
+
+
+"""
 def level_bool(level1 ,o ,temp):
-    if (level1 + level[o]) >= 5:
+    if ((level1 + level[o]) >= 5) and (shift_people[1][temp] == 0) and (o != shift_people[0][temp]):
         return o
     else:
+        ####################################################################################
+        #他のレベルの人を入れる処理
+        ####################################################################################
         for n in range(len(start_working)):
             if start_working[n][temp] != 0:
                 if (level1 + level[n]) >= 5:
-                    o = n
-                    return o
+                    if (n != o):
+                        return n
         for n in range(len(start_working)):
             if start_working[n][temp] != 0:
+                if (n != o):
+                    shift_start[n][temp] = start_working[n][temp]
+                    shift_end[n][temp] = end_working[n][temp]
+                    shift_people[n][temp] = n + 1
+                    return n
+        return o
+"""
+
+def level_bool(level1 ,o ,temp):
+    if (level1 + level[o]) >= 5:
+        return o,0
+    else:
+        print("111")
+        for n in range(len(start_working)):
+            if start_working[n][temp] != 0:
+                if (level1 + level[n]) >= 5:
+                    return n,1
+        for n in range(len(start_working)):
+            if (start_working[n][temp]) != 0 and (n != o):
                 shift_start[2][temp] = start_working[n][temp]
                 shift_end[2][temp] = end_working[n][temp]
                 shift_people[2][temp] = n + 1
-                return o
-        return o
+                return n,1
+        return o,0
 
 
 ####################################################################################
@@ -257,11 +286,10 @@ def eval():
     
     people_shift_binary = [[0 for i in range(col - 3)] for j in range(10)]
     #(shift_people)
-    for ab in range(10):
-        for y in range(3):
-            for z in range(col - 3):
-                if (shift_people[y][z] - 1) == ab:
-                    people_shift_binary[ab][z] = 1
+    for y in range(3):
+        for z in range(col - 3):
+            if shift_people[y][z] != 0:
+                people_shift_binary[shift_people[y][z]-1][z] = 1
     people_shift_number = [[] ,[] ,[] ,[] ,[] ,[] ,[] ,[] ,[] ,[]]
     temp_shift_binary = 0
     for cd in range(len(people_shift_binary)):
@@ -321,6 +349,22 @@ def shiage():
     sabunn_end = 0
     for w in range(col - 3):
         if shift_people[2][w] == 0:
+
+            if (sabunn_start != 0):
+                for p in range(len(shift_people)):
+                    if start_working_temp[p][w] != 0:
+                        if (start_working_temp[p][w] <= datetime.time(9 ,0)) and (p != (shift_people[0][w] - 1)) and (p != (shift_people[1][w] - 1)):
+                                shift_start[2][p] = start_working[p][w]
+                                shift_end[2][p] = end_working[p][w]
+
+            if (sabunn_end != 0):
+                for p in range(len(shift_people)):
+                    if start_working_temp[p][w] != 0:
+                        if (end_working_temp[p][w] >= datetime.time(15 ,30)) and (p != (shift_people[0][w] - 1)) and (p != (shift_people[1][w] - 1)):
+                                shift_start[2][p] = start_working[p][w]
+                                shift_end[2][p] = end_working[p][w]
+
+
             for u in range(3):
                 if shift_start[u][w] != 0:
                     temp_time_start = int(shift_start[u][w].strftime('%H')) + (int(shift_start[u][w].strftime('%M'))/60)
@@ -333,20 +377,6 @@ def shiage():
             for i in range(3):
                 sabunn_start += sabunn[i][0]
                 sabunn_end += sabunn[i][0]
-            
-            if (sabunn_start != 0):
-                for p in range(len(shift_people)):
-                    if start_working_temp[p][w] != 0:
-                        if (start_working_temp[p][w] <= datetime.time(9 ,0)) and (p != (shift_people[0][p] - 1)) and (p != (shift_people[1][p] - 1)):
-                                shift_start[2][p] = start_working[p][w]
-                                shift_end[2][p] = end_working[p][w]
-
-            if (sabunn_end != 0):
-                for p in range(len(shift_people)):
-                    if start_working_temp[p][w] != 0:
-                        if (end_working_temp[p][w] >= datetime.time(15 ,30)) and (p != (shift_people[0][p] - 1)) and (p != (shift_people[1][p] - 1)):
-                                shift_start[2][p] = start_working[p][w]
-                                shift_end[2][p] = end_working[p][w]
 
 
             sabunn_start = 0
@@ -465,18 +495,39 @@ for cycle in range(cycle_number):
 
     more_people,temp_more = more_people_bool(count)
 
+    syukkinn_kanou_temp = copy.deepcopy(syukkinn_kanou)
+    syukkinn_kanoubi_temp = copy.deepcopy(syukkinn_kanoubi)
+
     while(1 in more_people):
         for g in range(len(temp_more)):
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             temp_number = random.choice(temp_more)
-            temp_more.remove(temp_number)
-            #print(temp_number)
-            shift_in(temp_number)                                   #エラー起きる！！！！！！！！！！！！！！！！！！！
+            print("############################")
+            temp_number ,tekito = shift_in(temp_number)                                   #エラー起きる！！！！！！！！！！！！！！！！！！！
+            if tekito == "sono":
+                print("a")
+            else:
+                temp_more.remove(temp_number)
+                print(temp_number)
         count = shift_count(start_working)
+        print(count)
         more_people,temp_more = more_people_bool(count)
+        print("****************************************")
+        print(more_people)
+        print(temp_more)
+        print("****************************************")
+    
+
+    start_working = copy.deepcopy(start_working_temp)
+    end_working = copy.deepcopy(end_working_temp)
+    syukkinn_kanou = syukkinn_kanou_temp
+    syukkinn_kanoubi = syukkinn_kanoubi_temp
     shiage()
+
 
     print(shift_start)
     print(shift_people)
+
 
     penalty ,people_shift_number_temp = eval()
 
@@ -494,6 +545,9 @@ for cycle in range(cycle_number):
         for a in people_shift_number_temp_temp:
             aaa.append(len(a) * 8.5)
         print(aaa)
+
+
+
 
     if cycle == cycle_number - 1:
         print(penalty_temp)
