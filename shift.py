@@ -256,8 +256,8 @@ def time_bool():
 
 def hyouzi(people_deci ,start_deci ,end_deci):
     temp_date = copy.deepcopy(date)
-    temp_date.append(" ")
-    temp_date.append("お給料")
+    #temp_date.append(" ")
+    #temp_date.append("お給料")
     shift = pd.DataFrame(columns = user_name ,index = temp_date)
 
     for n in range(len(start_deci[0])):
@@ -266,9 +266,9 @@ def hyouzi(people_deci ,start_deci ,end_deci):
                 shift.iloc[n ,(people_deci[m][n] - 1)] = (start_deci[m][n].strftime("%H:%M") + "～" + end_deci[m][n].strftime("%H:%M"))
 
     #("Empty Dataframe ", shift, sep='\n')
-    for r in range(len(total_salary)):
-        #print("Empty Dataframe ", shift, sep='\n')
-        shift.iloc[len(shift.index) - 1 ,r] = ("約" + str('{:,}'.format(int(total_salary[r] * 1000))) + "円")
+    #for r in range(len(total_salary)):
+    #    #print("Empty Dataframe ", shift, sep='\n')
+    #    shift.iloc[len(shift.index) - 1 ,r] = ("約" + str('{:,}'.format(int(total_salary[r] * 1000))) + "円")
         
 
     shift.to_excel('Auto_shift.xlsx', sheet_name='shift1')
@@ -281,12 +281,12 @@ def eval():
             if shift_start[u][w] != 0:
                 temp_time_start = int(shift_start[u][w].strftime('%H')) + (int(shift_start[u][w].strftime('%M'))/60)            ###################################
                 temp_time_end = int(shift_end[u][w].strftime('%H')) + (int(shift_end[u][w].strftime('%M'))/60)
-                total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start + 1
-                #if temp_time_end - temp_time_start >= 7:
-                #    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start + 1
-                #    print(temp_time_end - temp_time_start + 1)
-                #else:
-                #    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start + 1
+                #total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start + 1
+                if temp_time_end - temp_time_start >= 7:
+                    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start
+                    #print(temp_time_end - temp_time_start + 1)
+                else:
+                    total_salary[shift_people[u][w] - 1] += temp_time_end - temp_time_start + 1
     
     people_shift_binary = [[0 for i in range(col - 3)] for j in range(10)]
     #(shift_people)
@@ -308,6 +308,9 @@ def eval():
     people_shift_number_temp = copy.deepcopy(people_shift_number)
     #print("合計金額/1000")
     #print(total_salary)                                             #############################ここおかしい
+    for tot in total_salary:
+        penalty += tot / 2
+
     salary_temp = 0
     for total_salary_temp in total_salary:
         salary_temp += (total_salary_temp * 1000)
@@ -334,14 +337,14 @@ def eval():
 
     #print(salary_pull)
     for i in salary_pull:
-        penalty += i / 100
+        penalty += i / 200
     
     #print(penalty)
 
     for i in range(len(people_shift_number)):
         for j in range(len(people_shift_number[i]) - 1):
             if (people_shift_number[i][j + 1] - people_shift_number[i][j]) < 3:
-                penalty += (people_shift_number[i][j + 1] - people_shift_number[i][j]) * 5
+                penalty += (people_shift_number[i][j + 1] - people_shift_number[i][j]) * 60
     
     #print(penalty)
     return penalty ,people_shift_number_temp
@@ -411,7 +414,9 @@ def level_in():                                                                 
 ########################################################################################################################################################################
 ########################################################################################################################################################################
 
-
+shift_start_deci = [[0 for i in range(col - 3)] for j in range(3)]
+shift_end_deci = [[0 for i in range(col - 3)] for j in range(3)]
+shift_people_deci = [[0 for i in range(col - 3)] for j in range(3)]
 
 
 for cycle in range(cycle_number):
@@ -442,9 +447,9 @@ for cycle in range(cycle_number):
     shift_end = [[0 for i in range(col - 3)] for j in range(3)]
     shift_people = [[0 for i in range(col - 3)] for j in range(3)]
 
-    shift_start_deci = [[0 for i in range(col - 3)] for j in range(3)]
-    shift_end_deci = [[0 for i in range(col - 3)] for j in range(3)]
-    shift_people_deci = [[0 for i in range(col - 3)] for j in range(3)]
+    #shift_start_deci = [[0 for i in range(col - 3)] for j in range(3)]
+    #shift_end_deci = [[0 for i in range(col - 3)] for j in range(3)]
+    #shift_people_deci = [[0 for i in range(col - 3)] for j in range(3)]
 
     a = 1
     for i in range(10):
@@ -502,6 +507,24 @@ for cycle in range(cycle_number):
 
 
 
+    
+    """
+    levelone = [0,0,0,0,0,0,0,0,0,0]
+    temp_one = 0
+    for level1 in range(len(start_working)):
+        if level[level1] == 1 and temp_less_people[level1] == 0:
+            levelone[level1] = 1
+            levelone_number.append(temp_one)
+        temp_one += 1
+
+    
+    while 1 in bool_one:
+        for level1 in levelone:
+            temp_one_temp = copy.deepcopy(temp_one)
+    """
+
+
+
     ####################################################################################
     #残りの人をシフトに入れるプログラム
     #基本的な仕組みとしては閾値以下の人の処理と同じ
@@ -556,12 +579,17 @@ for cycle in range(cycle_number):
     time_bool()
     shiage()
 
+    print("処理中")
 
-    #print(shift_start)
-    #print(shift_people)
-    #print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    #print(len(shift_start[2]))
-    #print(len(shift_people[2]))
+
+
+    for i in range(3):
+        for a in range(len(shift_start[0])):
+            if shift_start_deci[i][a] != 0:
+                if shift_start_deci[i][a] < datetime.time(8 ,0):
+                    shift_start_deci[i][a] = datetime.time(8 ,0)
+                if shift_end_deci[i][a] > datetime.time(15 ,30):
+                    shift_end_deci[i][a] = datetime.time(15 ,30)
 
 
     penalty ,people_shift_number_temp = eval()
@@ -586,8 +614,11 @@ for cycle in range(cycle_number):
 
     if cycle == cycle_number - 1:
         print(penalty_temp)
-        print(total_salary)
-        hyouzi(shift_people ,shift_start ,shift_end)
+        print(total_salary_deci)
+        print(shift_people_deci)
+        #print(shift_start)
+        #print(shift_start_deci)
+        hyouzi(shift_people_deci ,shift_start_deci ,shift_end_deci)
 
 
 
